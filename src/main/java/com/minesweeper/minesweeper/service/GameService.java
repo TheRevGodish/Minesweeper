@@ -8,9 +8,7 @@ public class GameService {
 
     private Grid grid;
 
-    public GameService() {
-        startNewGame(10, 10);
-    }
+    public GameService() {startNewGame(4, 4);}
 
     public void startNewGame(int width, int height) {
         this.grid = new Grid(width, height);
@@ -24,6 +22,19 @@ public class GameService {
         grid.revealCell(x, y);
     }
 
-    /*public boolean isGameOver() {
-    }*/
+    public boolean isGameLost() {
+        return grid.isGameLost();
+    }
+
+    public boolean isGameOver() {
+        return grid.isGameOver();
+    }
+
+    public boolean checkWin() {
+        return !grid.isGameLost();
+    }
+
+    public Object getCell(int x, int y) {
+        return grid.getCell(x, y);
+    }
 }

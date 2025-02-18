@@ -2,7 +2,6 @@ package com.minesweeper.minesweeper;
 
 import java.util.Random;
 import static java.lang.Math.round;
-import static java.lang.String.valueOf;
 
 public class Grid {
 
@@ -23,6 +22,11 @@ public class Grid {
             }
         }
 
+        plantRandomBombs();
+        calculateAdjacentBombs();
+    }
+
+    public void plantRandomBombs() {
         AMOUNT_OF_BOMBS = round((float) WIDTH * HEIGHT / 10);
         for (int i = 0; i < AMOUNT_OF_BOMBS; i++) {
             int col = random.nextInt(WIDTH - 1);
@@ -32,16 +36,28 @@ public class Grid {
         }
     }
 
+    public void calculateAdjacentBombs() {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                if (!gameGrid[i][j].isBomb()) {
+                    int count = 0;
+                    for (int k = -1; k <= 1; k++) {
+                        for (int l = -1; l <= 1; l++) {
+                            int newX = i + k;
+                            int newY = j + l;
+                            if (isValidPosition(newX, newY) && gameGrid[newY][newX].isBomb()) {
+                                count++;
+                            }
+                        }
+                    }
+                    gameGrid[i][j].setAdjacentBombs(count);
+                }
+            }
+        }
+    }
 
     public void revealCell(int x, int y) {
-        if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
-            System.out.println("out of the grid");
-            return;
-        }
-
-        if (gameGrid[x][y].isRevealed()) {
-            return;
-        }
+        if (!isValidPosition(x, y) || gameGrid[x][y].isRevealed()) {return;}
 
         gameGrid[x][y].reveal();
 
@@ -50,86 +66,28 @@ public class Grid {
             return;
         }
 
-        int adjacentBombs = getAdjacentBombs(x, y);
-        gameGrid[x][y].setAdjacentBombs(adjacentBombs);
-        if (adjacentBombs == 0) {
+        if (gameGrid[x][y].getAdjacentBombs() == 0) {
             revealAdjacentCells(x, y);
         }
     }
 
-
     public void revealAdjacentCells(int x, int y) {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                int dx = x + i;
-                int dy = y + j;
-                if (dx >= 0 && dx < WIDTH && dy >= 0 && dy < HEIGHT) {
-                    if (!gameGrid[dx][dy].isRevealed() && !gameGrid[dx][dy].isBomb()) {
-                        revealCell(dx, dy);
+                int newX = x + i;
+                int newY = y + j;
+                if (isValidPosition(newX, newY)) {
+                    if (!gameGrid[newX][newY].isRevealed() && !gameGrid[newX][newY].isBomb()) {
+                        revealCell(newX, newY);
                     }
                 }
             }
         }
     }
 
-
-    public int getAdjacentBombs(int x, int y) {
-        int bombCount = 0;
-        for (int k = x - 1; k <= x + 1; k++) {
-            for (int l = y - 1; l <= y + 1; l++) {
-                if (k >= 0 && k < WIDTH && l >= 0 && l < HEIGHT) {
-                    if (gameGrid[k][l].isBomb()) {
-                        bombCount++;
-                    }
-                }
-            }
-        }
-        return bombCount;
+    private boolean isValidPosition(int x, int y) {
+        return x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT;
     }
-
-
-    public void display() {
-        System.out.print("   ");
-        for (int j = 0; j < WIDTH; j++) {
-            System.out.print(j + 1 + "  ");
-        }
-        System.out.println();
-        for (int i = 0; i < HEIGHT; i++) {
-            System.out.print((i + 1) + " ");
-            for (int j = 0; j < WIDTH; j++) {
-                System.out.print(gameGrid[i][j].display() + " ");
-            }
-            System.out.println();
-        }
-        /*for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
-                System.out.print(gameGrid[i][j].display());
-            }
-            System.out.print("\n");
-        }*/
-    }
-
-
-    public void displayAll() {
-        System.out.print("   ");
-        for (int j = 0; j < WIDTH; j++) {
-            System.out.print(j + 1 + "  ");
-        }
-        System.out.println();
-        for (int i = 0; i < HEIGHT; i++) {
-            System.out.print((i + 1) + " ");
-            for (int j = 0; j < WIDTH; j++) {
-                System.out.print(gameGrid[i][j].displayAll() + " ");
-            }
-            System.out.println();
-        }
-    }
-
-
-    public boolean isGameOver() {
-        return gameLost || remainingCells() == AMOUNT_OF_BOMBS;
-    }
-
 
     public int remainingCells() {
         int remainingCell = 0;
@@ -142,4 +100,12 @@ public class Grid {
         }
         return remainingCell;
     }
+
+    public boolean isGameOver() {return gameLost || remainingCells() == AMOUNT_OF_BOMBS;}
+    public boolean isGameLost() {return gameLost;}
+    public Object getWidth() {return WIDTH;}
+    public Object getHeight() {return HEIGHT;}
+    public Object getAmountOfBombs() {return AMOUNT_OF_BOMBS;}
+    public Object getCell(int x, int y) {return gameGrid[x][y];}
+    public Object getCells() {return gameGrid;}
 }

@@ -1,55 +1,27 @@
 package com.minesweeper.minesweeper;
 
-import java.util.Objects;
-
 public class Cell {
 
-    private boolean bomb;
     private boolean reveal;
+    private boolean bomb;
+    private boolean flag;
     private int adjacentBombs;
 
     public Cell() {
         this.bomb = false;
         this.reveal = false;
+        this.flag = false;
     }
 
-    public void reveal() {
-        this.reveal = true;
-    }
+    public void reveal() {this.reveal = true;}
+    public boolean isRevealed() {return reveal;}
 
-    public boolean isRevealed() {
-        return reveal;
-    }
+    public void plantBomb() {this.bomb = true;}
+    public boolean isBomb() {return bomb;}
 
-    public void plantBomb() {
-        this.bomb = true;
-    }
+    public void setFlag(boolean flag) {this.flag = flag;}
+    public boolean isFlag() {return flag;}
 
-    public boolean isBomb() {
-        return bomb;
-    }
-
-    public void setAdjacentBombs(int adjacentBombs) {
-        this.adjacentBombs = adjacentBombs;
-    }
-
-    public String display() {
-        if (reveal) {
-            if (bomb) {
-                return "\uD83D\uDCA3";
-            } else {
-                return adjacentBombs > 0 ? " " + adjacentBombs + "": "⬛";
-            }
-        } else {
-            return "⬜";
-        }
-    }
-
-    public String displayAll() {
-        if (bomb) {
-            return "\uD83D\uDCA3";
-        } else {
-            return "⬛";
-        }
-    }
+    public void setAdjacentBombs(int adjacentBombs) {this.adjacentBombs = adjacentBombs;}
+    public int getAdjacentBombs() {return adjacentBombs;}
 }
